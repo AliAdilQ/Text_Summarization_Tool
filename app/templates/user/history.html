@@ -1,0 +1,50 @@
+{% extends "user/base.html" %}
+{% from 'macros.html' import summary_table, empty_state, render_pagination %}
+{% block title %}My summary history{% endblock %}
+{% block workspace_content %}
+  <div class="page-heading">
+    <div>
+      <span class="eyebrow">GOOD IDEAS, KEPT CLOSE</span>
+      <h1>
+        Your reading <span class="accent-serif">library.</span>
+      </h1>
+      <p>Every insight has a home. Revisit yours whenever you need.</p>
+    </div>
+    <a class="btn btn-primary" href="{{ url_for('summarizer.workspace') }}">
+      <i aria-hidden="true" class="bi bi-plus-lg">
+      </i> New summary</a>
+    </div>
+    <section class="panel">
+      <div class="panel-heading">
+        <h2>
+          Summary history <span class="count-badge">{{ pagination.total }}</span>
+        </h2>
+        {% if pagination.total %}
+          <form method="post"
+                action="{{ url_for('user.clear_history') }}"
+                data-confirm="Clear all your summaries? This permanently deletes your entire history.">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            <button class="text-button danger-text">
+              <i aria-hidden="true" class="bi bi-trash3">
+              </i> Clear history
+            </button>
+          </form>
+        {% endif %}
+      </div>
+      <form class="filter-bar" method="get">
+        <div class="search-input">
+          <i aria-hidden="true" class="bi bi-search">
+          </i>
+          <input class="form-control"
+                 name="q"
+                 value="{{ search }}"
+                 placeholder="Find a summary…"
+                 aria-label="Search summaries">
+        </div>
+        <select class="form-select" name="length" aria-label="Filter by length">
+          <option value="">All lengths</option>{% for value in ['short','medium','long'] %}<option value="{{ value }}" {{ 'selected' if value == length }}>{{ value|capitalize }}</option>{% endfor %}</select>
+        <button class="btn btn-outline" type="submit">
+          Filter <i aria-hidden="true" class="bi bi-funnel">
+          </i>
+        </button>
+      </form>{% if pagination.items %}{{ summary_table(pagination.items) }}{{ render_pagination(pagination, 'user.history', search, length) }}{% else %}{{ empty_state('No summaries on this shelf yet.', 'Try a different search or create your next summary.', url_for('summarizer.workspace')) }}{% endif %}</section>{% endblock %}

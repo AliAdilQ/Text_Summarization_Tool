@@ -1,0 +1,85 @@
+{% extends "admin/base.html" %}
+{% from 'macros.html' import render_pagination, empty_state %}
+{% block title %}Admin users{% endblock %}
+{% block admin_breadcrumb %}Users{% endblock %}
+{% block admin_content %}
+  <div class="page-heading">
+    <div>
+      <span class="eyebrow">THE PEOPLE BEHIND THE IDEAS</span>
+      <h1>
+        Your community<span class="teal-text">.</span>
+      </h1>
+      <p>Manage accounts, access, and the people who make it all happen.</p>
+    </div>
+    <span class="date-pill">
+      <i aria-hidden="true" class="bi bi-people">
+      </i> {{ pagination.total }} users</span>
+    </div>
+    <section class="panel">
+      <div class="panel-heading">
+        <h2>All users</h2>
+        <span class="muted small-text">Select an account to manage access</span>
+      </div>
+      <form class="filter-bar" method="get">
+        <div class="search-input">
+          <i aria-hidden="true" class="bi bi-search">
+          </i>
+          <input class="form-control"
+                 name="q"
+                 value="{{ search }}"
+                 placeholder="Search by name or email…"
+                 aria-label="Search users">
+        </div>
+        <button class="btn btn-outline">
+          Search <i aria-hidden="true" class="bi bi-arrow-right">
+          </i>
+        </button>
+      </form>
+      {% if pagination.items %}
+        <div class="table-responsive">
+          <table class="table app-table">
+            <thead>
+              <tr>
+                <th>User</th>
+                <th>Role</th>
+                <th>Status</th>
+                <th>Summaries</th>
+                <th>Joined</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for member in pagination.items %}
+                <tr>
+                  <td>
+                    <a class="user-cell"
+                       href="{{ url_for('admin.user_detail', user_id=member.id) }}">
+                      <span class="avatar avatar-{{ loop.index % 3 }}">{{ member.username[0]|upper }}</span>
+                      <div>
+                        <strong>{{ member.username }}</strong>
+                        <span class="table-subtext">{{ member.email }}</span>
+                      </div>
+                    </a>
+                  </td>
+                  <td>
+                    <span class="role-badge {{ 'admin' if member.is_admin }}">
+                      <i aria-hidden="true" class="bi bi-{{ 'shield-check' if member.is_admin else 'person' }}">
+                      </i> {{ 'Admin' if member.is_admin else 'Member' }}</span>
+                    </td>
+                    <td>
+                      <span class="status-badge {{ 'inactive' if not member.active }}">
+                        <span class="status-dot"></span> {{ 'Active' if member.active else 'Inactive' }}</span>
+                      </td>
+                      <td>{{ member.summaries|length }}</td>
+                      <td class="muted">{{ member.created_at.strftime("%b %d, %Y") }}</td>
+                      <td>
+                        <a class="btn btn-outline btn-small"
+                           href="{{ url_for('admin.user_detail', user_id=member.id) }}">Manage <i aria-hidden="true" class="bi bi-arrow-up-right">
+                          </i>
+                        </a>
+                      </td>
+                    </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>{{ render_pagination(pagination, 'admin.users', search) }}{% else %}{{ empty_state('No matching readers.', 'Try searching with a different name or email.') }}{% endif %}</section>{% endblock %}

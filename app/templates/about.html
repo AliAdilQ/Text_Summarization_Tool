@@ -1,0 +1,68 @@
+{% extends "base.html" %}
+{% block title %}About the project{% endblock %}
+{% block content %}
+  <section class="container-wide about-hero">
+    <span class="eyebrow">A THOUGHTFUL LITTLE TOOL</span>
+    <h1>
+      Less information overload.
+      <br>
+      More <span class="accent-serif">understanding.</span>
+    </h1>
+    <p>Text Summarization Tool is an open-source reading workspace that turns long English passages into concise summaries. Built for curious people, with a focus on clarity.</p>
+  </section>
+  <section class="container-wide about-grid">
+    <article class="panel about-panel">
+      <span class="feature-icon">
+        <i aria-hidden="true" class="bi bi-cpu">
+        </i>
+      </span>
+      <h2>The language model</h2>
+      <p>Hugging Face's <strong>sshleifer/distilbart-cnn-12-6</strong> is a distilled BART model trained for English news summarization. It generates new sentences to capture the main ideas in your text.</p>
+      <p>Long inputs are split at sentence boundaries within the model's token budget. Chunk summaries are combined and, when needed, summarized again.</p>
+      <a class="text-link"
+         href="https://huggingface.co/sshleifer/distilbart-cnn-12-6"
+         target="_blank"
+         rel="noopener">Explore the model <i aria-hidden="true" class="bi bi-arrow-up-right">
+        </i>
+      </a>
+    </article>
+    <article class="panel about-panel">
+      <span class="feature-icon lavender">
+        <i aria-hidden="true" class="bi bi-lightning-charge">
+        </i>
+      </span>
+      <h2>A resilient fallback</h2>
+      <p>If model weights, memory, or connectivity are unavailable, the app switches to a lightweight extractive engine. It ranks sentences by meaningful word frequency and keeps selected sentences in their original order.</p>
+      <p>Every result shows the engine used. Three length options let you choose the amount of detail, whichever engine is available.</p>
+    </article>
+    <article class="panel about-panel">
+      <span class="feature-icon peach">
+        <i aria-hidden="true" class="bi bi-shield-check">
+        </i>
+      </span>
+      <h2>Your workspace</h2>
+      <p>Try summarization without an account: guest inputs are processed without being stored in the database. Sign in to automatically save your original text and summary in your private history.</p>
+      <p>Other members cannot access your history. Authorized administrators can review saved content for workspace management. Delete individual summaries or clear your entire history whenever you choose.</p>
+    </article>
+    <article class="panel about-panel">
+      <span class="feature-icon blue">
+        <i aria-hidden="true" class="bi bi-code-slash">
+        </i>
+      </span>
+      <h2>Open by design</h2>
+      <p>A Flask application factory, modular blueprints, SQLAlchemy models, validated forms, and a dedicated NLP service keep the project approachable and extensible.</p>
+      <p>Created by <strong>AliAdilQ</strong>. Released under the MIT license, with tests and setup documentation to help you make it your own.</p>
+      <a class="text-link"
+         href="https://github.com/AliAdilQ/Text_Summarization_Tool"
+         target="_blank"
+         rel="noopener">Explore the repository <i aria-hidden="true" class="bi bi-github">
+        </i>
+      </a>
+    </article>
+  </section>
+  <section class="container-wide about-note">
+    <i aria-hidden="true" class="bi bi-info-circle">
+    </i>
+    <p>Summaries can omit context or introduce inaccuracies. Review important facts against the original text. English prose works best; this tool does not provide fact checking.</p>
+  </section>
+{% endblock %}

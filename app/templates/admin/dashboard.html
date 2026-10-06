@@ -1,0 +1,146 @@
+{% extends "admin/base.html" %}
+{% from 'macros.html' import summary_table, empty_state %}
+{% block title %}Admin dashboard{% endblock %}
+{% block admin_content %}
+  <div class="page-heading">
+    <div>
+      <span class="eyebrow">THE BIG PICTURE</span>
+      <h1>
+        Workspace overview<span class="teal-text">.</span>
+      </h1>
+      <p>A thoughtful look at your community, activity, and impact.</p>
+    </div>
+    <span class="date-pill">
+      <i aria-hidden="true" class="bi bi-calendar3">
+      </i> Last 7 days · UTC</span>
+    </div>
+    <div class="stat-grid admin-stats">
+      <article class="stat-card">
+        <span class="stat-icon">
+          <i aria-hidden="true" class="bi bi-people">
+          </i>
+        </span>
+        <span>Total users</span>
+        <strong>{{ user_count }}</strong>
+        <small>People finding a little clarity</small>
+      </article>
+      <article class="stat-card">
+        <span class="stat-icon lavender">
+          <i aria-hidden="true" class="bi bi-file-earmark-text">
+          </i>
+        </span>
+        <span>Total summaries</span>
+        <strong>{{ counts[0] }}</strong>
+        <small>Ideas kept in the workspace</small>
+      </article>
+      <article class="stat-card">
+        <span class="stat-icon"><i aria-hidden="true" class="bi bi-calendar2-check"></i></span>
+        <span>Generated today</span>
+        <strong>{{ today_count }}</strong>
+        <small>A fresh day of understanding</small>
+      </article>
+      <article class="stat-card">
+        <span class="stat-icon peach">
+          <i aria-hidden="true" class="bi bi-arrows-collapse">
+          </i>
+        </span>
+        <span>Average reduction</span>
+        <strong>{{ '%.1f'|format(counts[1]) }}<em>%</em>
+        </strong>
+        <small>Fewer words, same big picture</small>
+      </article>
+      <article class="stat-card">
+        <span class="stat-icon blue">
+          <i aria-hidden="true" class="bi bi-stopwatch">
+          </i>
+        </span>
+        <span>Average processing</span>
+        <strong>{{ '%.3f'|format(counts[2]) }}<em>s</em>
+        </strong>
+        <small>Time from text to insight</small>
+      </article>
+    </div>
+    <div class="admin-chart-grid">
+      <section class="panel activity-chart">
+        <div class="panel-heading">
+          <div>
+            <h2>Summary activity</h2>
+            <p>Ideas made clearer over the past week</p>
+          </div>
+          <span class="chart-legend">
+            <span class="status-dot"></span> Summaries</span>
+          </div>
+          <div class="chart-container">
+            <canvas id="activity-chart"
+                    role="img"
+                    aria-label="Summaries generated in the last seven days">
+            </canvas>
+          </div>
+        </section>
+        <section class="panel">
+          <div class="panel-heading">
+            <div>
+              <h2>A matter of length</h2>
+              <p>How people like their summaries</p>
+            </div>
+            <i aria-hidden="true" class="bi bi-three-dots muted">
+            </i>
+          </div>
+          <div class="donut-container">
+            <canvas id="length-chart" role="img" aria-label="Summary length distribution">
+            </canvas>
+            <div class="donut-label">
+              <strong>{{ counts[0] }}</strong>
+              <span>summaries</span>
+            </div>
+          </div>
+          <div class="donut-legend">
+            <span>
+              <i aria-hidden="true" class="legend-dot short">
+              </i> Short <strong>{{ charts.lengths[0] }}</strong>
+            </span>
+            <span>
+              <i aria-hidden="true" class="legend-dot medium">
+              </i> Medium <strong>{{ charts.lengths[1] }}</strong>
+            </span>
+            <span>
+              <i aria-hidden="true" class="legend-dot long">
+              </i> Long <strong>{{ charts.lengths[2] }}</strong>
+            </span>
+          </div>
+        </section>
+      </div>
+      <div class="admin-bottom-grid">
+        <section class="panel">
+          <div class="panel-heading">
+            <h2>Recent summaries</h2>
+            <a class="text-link"
+               href="{{ url_for('admin.summaries') }}">View all <i aria-hidden="true" class="bi bi-arrow-up-right">
+              </i>
+            </a>
+          </div>{% if recent %}{{ summary_table(recent, true) }}{% else %}{{ empty_state('No activity yet.', 'Summaries will appear here as your community starts reading.') }}{% endif %}</section>
+          <section class="panel active-users">
+            <div class="panel-heading">
+              <div>
+                <h2>Curious minds</h2>
+                <p>Your most active readers</p>
+              </div>
+            </div>
+            <div class="chart-container users-chart">
+              <canvas id="users-chart"
+                      role="img"
+                      aria-label="Most active users by summary count">
+              </canvas>
+            </div>
+            <a class="active-users-link"
+               href="{{ url_for('admin.users') }}">Meet your community <i aria-hidden="true" class="bi bi-arrow-right">
+              </i>
+            </a>
+          </section>
+        </div>
+{% endblock %}
+{% block scripts %}
+  <script id="chart-data" type="application/json">{{ charts|tojson }}</script>
+  <script src="{{ url_for('static', filename='vendor/chart.umd.min.js') }}" defer></script>
+  <script src="{{ url_for('static', filename='js/admin.js') }}" defer></script>
+{% endblock %}

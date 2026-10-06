@@ -1,0 +1,15 @@
+[tool.ruff]
+target-version = "py310"
+line-length = 100
+exclude = ["app/static/vendor"]
+
+[tool.ruff.lint]
+select = ["E4", "E7", "E9", "F", "I"]
+
+[tool.djlint]
+profile = "jinja"
+indent = 2
+max_line_length = 110
+format_css = false
+format_js = false
+

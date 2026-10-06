@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description"
+          content="Make room for the important ideas. A thoughtful text summarization workspace powered by NLP.">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+    <title>{% block title %}Text Summarization Tool{% endblock %} · Briefly</title>
+    <script>try{document.documentElement.dataset.theme=localStorage.getItem('briefly-theme')||(matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light')}catch(e){}</script>
+    <link rel="icon"
+          type="image/svg+xml"
+          href="{{ url_for('static', filename='images/favicon.svg') }}">
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='vendor/bootstrap.min.css') }}">
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='vendor/bootstrap-icons.min.css') }}">
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='css/style.css') }}">
+    {% block head %}{% endblock %}
+  </head>
+  <body class="{% block body_class %} {% endblock %}">
+    {% block navigation %}
+      <header class="site-header">
+        <nav class="site-nav container-wide" aria-label="Main navigation">
+          <a class="brand" href="{{ url_for('main.home') }}">
+            <span class="brand-symbol">
+              <i aria-hidden="true" class="bi bi-text-paragraph">
+              </i>
+            </span>briefly<span class="brand-dot">.</span>
+          </a>
+          <button class="nav-mobile-toggle icon-button"
+                  aria-expanded="false"
+                  aria-controls="main-nav"
+                  aria-label="Toggle navigation">
+            <i aria-hidden="true" class="bi bi-list">
+            </i>
+          </button>
+          <div class="nav-links" id="main-nav">
+            <a class="{{ 'active' if request.endpoint == 'main.home' }}"
+               href="{{ url_for('main.home') }}">Overview</a>
+            <a class="{{ 'active' if request.endpoint == 'summarizer.workspace' }}"
+               href="{{ url_for('summarizer.workspace') }}">Summarizer</a>
+            {% if current_user.is_authenticated %}<a class="{{ 'active' if request.endpoint and request.endpoint.startswith('user.') }}"
+   href="{{ url_for('user.dashboard') }}">My workspace</a>{% endif %}
+            <a class="{{ 'active' if request.endpoint == 'main.about' }}"
+               href="{{ url_for('main.about') }}">About</a>
+          </div>
+          <div class="nav-actions">
+            <button class="theme-toggle icon-button" aria-label="Toggle color theme">
+              <i aria-hidden="true" class="bi bi-moon">
+              </i>
+            </button>
+            {% if current_user.is_authenticated %}
+              {% if current_user.is_admin %}
+                <a class="admin-nav-link" href="{{ url_for('admin.dashboard') }}">
+                  <i aria-hidden="true" class="bi bi-grid">
+                  </i> Admin</a>{% endif %}
+                <a class="avatar"
+                   href="{{ url_for('user.profile') }}"
+                   aria-label="Your profile">{{ current_user.username[0]|upper }}</a>
+                <form method="post" action="{{ url_for('auth.logout') }}">
+                  <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                  <button class="icon-button" aria-label="Sign out" title="Sign out">
+                    <i aria-hidden="true" class="bi bi-box-arrow-right">
+                    </i>
+                  </button>
+                </form>
+            {% else %}<a class="nav-signin" href="{{ url_for('auth.login') }}">Sign in</a>
+              <a class="btn btn-primary btn-small"
+                 href="{{ url_for('auth.register') }}">Get started <i aria-hidden="true" class="bi bi-arrow-up-right">
+                </i>
+              </a>
+            {% endif %}
+          </div>
+        </nav>
+      </header>
+    {% endblock %}
+    <div class="flash-stack" aria-live="polite">
+      {% for category, message in get_flashed_messages(with_categories=true) %}
+        <div class="flash-message {{ category }}">
+          <i aria-hidden="true" class="bi bi-{{ 'check-circle' if category == 'success' else 'info-circle' }}">
+          </i>
+          <span>{{ message }}</span>
+          <button class="dismiss-flash" aria-label="Dismiss notification">
+            <i aria-hidden="true" class="bi bi-x">
+            </i>
+          </button>
+        </div>
+      {% endfor %}
+    </div>
+    {% block layout %}
+      <main id="main-content">
+        {% block content %}{% endblock %}
+      </main>
+    {% endblock %}
+    {% block footer %}
+      <footer class="site-footer">
+        <div class="container-wide footer-top">
+          <div>
+            <a class="brand" href="{{ url_for('main.home') }}">
+              <span class="brand-symbol">
+                <i aria-hidden="true" class="bi bi-text-paragraph">
+                </i>
+              </span>briefly<span class="brand-dot">.</span>
+            </a>
+            <p>Less reading. More understanding.</p>
+          </div>
+          <div class="footer-links">
+            <a href="{{ url_for('summarizer.workspace') }}">Summarizer</a>
+            <a href="{{ url_for('main.about') }}">About the project</a>
+            <a href="https://github.com/AliAdilQ/Text_Summarization_Tool"
+               target="_blank"
+               rel="noopener">
+              <i aria-hidden="true" class="bi bi-github">
+              </i> Source code <i aria-hidden="true" class="bi bi-arrow-up-right">
+              </i>
+            </a>
+          </div>
+        </div>
+        <div class="container-wide footer-bottom">
+          <span>© {{ 2026 }} Briefly · Text Summarization Tool</span>
+          <span>Built by <a href="https://github.com/AliAdilQ"
+    target="_blank"
+    rel="noopener">AliAdilQ</a> <span class="small-dot"></span> Open source, thoughtfully made</span>
+        </div>
+      </footer>
+    {% endblock %}
+    <div id="app-toast" class="app-toast" role="status" aria-live="polite"></div>
+    <dialog id="confirm-dialog">
+      <form method="dialog">
+        <span class="dialog-icon">
+          <i aria-hidden="true" class="bi bi-exclamation-triangle">
+          </i>
+        </span>
+        <h2>Confirm this change</h2>
+        <p id="confirm-message"></p>
+        <div class="button-row">
+          <button class="btn btn-outline" value="cancel">Cancel</button>
+          <button class="btn btn-danger" value="confirm">Confirm</button>
+        </div>
+      </form>
+    </dialog>
+    <script src="{{ url_for('static', filename='js/main.js') }}" defer></script>
+    {% block scripts %}{% endblock %}
+  </body>
+</html>

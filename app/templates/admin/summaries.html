@@ -1,0 +1,57 @@
+{% extends "admin/base.html" %}
+{% from 'macros.html' import summary_table, render_pagination, empty_state %}
+{% block title %}Admin summaries{% endblock %}
+{% block admin_breadcrumb %}Summaries{% endblock %}
+{% block admin_content %}
+  <div class="page-heading">
+    <div>
+      <span class="eyebrow">INFORMATION, WITH A LITTLE LESS NOISE</span>
+      <h1>
+        The summary collection<span class="teal-text">.</span>
+      </h1>
+      <p>Explore your workspace's reading, insights, and activity.</p>
+    </div>
+  </div>
+  <div class="stat-grid user-stats compact-stats">
+    <article class="stat-card">
+      <span>Total summaries</span>
+      <strong>{{ stats[0] }}</strong>
+    </article>
+    <article class="stat-card">
+      <span>Average reduction</span>
+      <strong>{{ '%.1f'|format(stats[1]) }}<em>%</em>
+      </strong>
+    </article>
+    <article class="stat-card">
+      <span>Average processing</span>
+      <strong>{{ '%.3f'|format(stats[2]) }}<em>s</em>
+      </strong>
+    </article>
+  </div>
+  <section class="panel">
+    <div class="panel-heading">
+      <h2>
+        All summaries <span class="count-badge">{{ pagination.total }}</span>
+      </h2>
+      <span class="small-text muted">Search, explore, and manage</span>
+    </div>
+    <form class="filter-bar admin-filters" method="get">
+      <div class="search-input">
+        <i aria-hidden="true" class="bi bi-search">
+        </i>
+        <input class="form-control"
+               name="q"
+               value="{{ search }}"
+               placeholder="Search summaries…"
+               aria-label="Search summaries">
+      </div>
+      <select name="length" class="form-select" aria-label="Summary length">
+        <option value="">All lengths</option>{% for value in ['short','medium','long'] %}<option value="{{ value }}" {{ 'selected' if value == length }}>{{ value|capitalize }}</option>{% endfor %}</select>
+      <select name="user_id" class="form-select" aria-label="Summary author">
+        <option value="">All users</option>{% for member in users %}<option value="{{ member.id }}"
+        {{ 'selected' if selected_user == member.id }}>{{ member.username }}</option>{% endfor %}</select>
+      <button class="btn btn-outline">
+        Filter <i aria-hidden="true" class="bi bi-funnel">
+        </i>
+      </button>
+    </form>{% if pagination.items %}{{ summary_table(pagination.items, true) }}{{ render_pagination(pagination, 'admin.summaries', search, length, selected_user or '') }}{% else %}{{ empty_state('No summaries match those filters.', 'Try another search or choose a different user or length.') }}{% endif %}</section>{% endblock %}

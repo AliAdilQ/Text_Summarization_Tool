@@ -1,0 +1,24 @@
+{% extends "admin/base.html" %}
+{% from 'macros.html' import summary_content %}
+{% block title %}Summary details{% endblock %}
+{% block admin_breadcrumb %}Summary details{% endblock %}
+{% block admin_content %}
+  <a class="back-link" href="{{ url_for('admin.summaries') }}">
+    <i aria-hidden="true" class="bi bi-arrow-left">
+    </i> Back to summaries</a>
+    <div class="page-heading detail-heading">
+      <div>
+        <span class="eyebrow">SUMMARY DETAILS</span>
+        <h1>{{ summary.title }}</h1>
+        <p>By <a href="{{ url_for('admin.user_detail', user_id=summary.user_id) }}">{{ summary.user.username }}</a> · {{ summary.created_at.strftime("%b %d, %Y · %H:%M") }} UTC</p>
+      </div>
+      <form method="post"
+            action="{{ url_for('admin.delete_summary', summary_id=summary.id) }}"
+            data-confirm="Delete this summary from {{ summary.user.username }}'s history permanently?">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        <button class="btn btn-outline danger-text">
+          <i aria-hidden="true" class="bi bi-trash3">
+          </i> Delete summary
+        </button>
+      </form>
+    </div>{{ summary_content(summary, true) }}{% endblock %}

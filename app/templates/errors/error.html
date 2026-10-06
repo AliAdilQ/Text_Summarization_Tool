@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{% block title %}{{ code }} · {{ title }}{% endblock %}
+{% block content %}
+  <section class="error-page container-wide">
+    <span class="error-code">{{ code }}</span>
+    <span class="eyebrow">LET'S FIND A CLEARER PATH</span>
+    <h1>
+      {{ title }}<span class="teal-text">.</span>
+    </h1>
+    <p>{{ message }}</p>
+    <div class="button-row">
+      <a class="btn btn-primary" href="{{ url_for('main.home') }}">
+        <i aria-hidden="true" class="bi bi-arrow-left">
+        </i> Back to home</a>
+        <a class="btn btn-outline"
+           href="{{ url_for('summarizer.workspace') }}">Open summarizer <i aria-hidden="true" class="bi bi-arrow-up-right">
+          </i>
+        </a>
+      </div>
+    </section>
+{% endblock %}

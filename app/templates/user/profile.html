@@ -1,0 +1,40 @@
+{% extends "user/base.html" %}
+{% from 'macros.html' import field %}
+{% block title %}Your profile{% endblock %}
+{% block workspace_content %}
+  <div class="page-heading">
+    <div>
+      <span class="eyebrow">THE PERSON BEHIND THE IDEAS</span>
+      <h1>
+        Your <span class="accent-serif">profile.</span>
+      </h1>
+      <p>A few details that make this workspace yours.</p>
+    </div>
+  </div>
+  <div class="profile-grid">
+    <section class="panel profile-form">
+      <div class="panel-heading">
+        <h2>Account details</h2>
+      </div>
+      <form method="post" novalidate>
+        {{ form.hidden_tag() }}{{ field(form.username) }}{{ field(form.email) }}<button class="btn btn-primary"
+        type="submit">
+        Save changes <i aria-hidden="true" class="bi bi-check2">
+        </i>
+        </button>
+      </form>
+    </section>
+    <section class="panel profile-card">
+      <span class="large-avatar">{{ current_user.username[0]|upper }}</span>
+      <h2>{{ current_user.username }}</h2>
+      <p>{{ current_user.email }}</p>
+      <span class="badge-length medium">{{ 'Administrator' if current_user.is_admin else 'Personal workspace' }}</span>
+      <div class="profile-meta">
+        <span>Member since</span>
+        <strong>{{ current_user.created_at.strftime("%B %d, %Y") }}</strong>
+        <span>Last sign in</span>
+        <strong>{{ current_user.last_login.strftime("%b %d, %Y · %H:%M UTC") if current_user.last_login else 'Your first visit' }}</strong>
+      </div>
+    </section>
+  </div>
+{% endblock %}

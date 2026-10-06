@@ -1,0 +1,105 @@
+{% extends "admin/base.html" %}
+{% from 'macros.html' import summary_table, empty_state %}
+{% block title %}Manage {{ member.username }}{% endblock %}
+{% block admin_breadcrumb %}User details{% endblock %}
+{% block admin_content %}
+  <a class="back-link" href="{{ url_for('admin.users') }}">
+    <i aria-hidden="true" class="bi bi-arrow-left">
+    </i> Back to users</a>
+    <div class="page-heading">
+      <div>
+        <span class="eyebrow">ACCOUNT OVERVIEW</span>
+        <h1>
+          {{ member.username }}<span class="teal-text">.</span>
+        </h1>
+        <p>{{ member.email }} · Joined {{ member.created_at.strftime("%B %d, %Y") }}</p>
+      </div>
+      <span class="role-badge {{ 'admin' if member.is_admin }}">{{ 'Administrator' if member.is_admin else 'Member' }}</span>
+    </div>
+    <div class="profile-grid admin-profile">
+      <section class="panel">
+        <div class="panel-heading">
+          <h2>Account information</h2>
+        </div>
+        <dl class="account-details">
+          <div>
+            <dt>Username</dt>
+            <dd>
+              {{ member.username }}
+            </dd>
+          </div>
+          <div>
+            <dt>Email</dt>
+            <dd>
+              {{ member.email }}
+            </dd>
+          </div>
+          <div>
+            <dt>Status</dt>
+            <dd>
+              {{ 'Active' if member.active else 'Deactivated' }}
+            </dd>
+          </div>
+          <div>
+            <dt>Summaries created</dt>
+            <dd>
+              {{ member.summaries|length }}
+            </dd>
+          </div>
+          <div>
+            <dt>Last sign in</dt>
+            <dd>
+              {{ member.last_login.strftime("%b %d, %Y · %H:%M UTC") if member.last_login else 'No sign-in recorded' }}
+            </dd>
+          </div>
+        </dl>
+      </section>
+      <section class="panel">
+        <div class="panel-heading">
+          <h2>Manage access</h2>
+        </div>
+        <div class="management-actions">
+          {% if member.id == current_user.id %}
+            <div class="protected-notice">
+              <i aria-hidden="true" class="bi bi-shield-lock">
+              </i>
+              <h3>Your admin account is protected.</h3>
+              <p>Changes to your own administrative access are disabled to keep the workspace accessible.</p>
+            </div>
+          {% else %}
+            {% for action, title, description in [('role', 'Demote to member' if member.is_admin else 'Promote to administrator', 'Update this account’s administrative permissions.'), ('status', 'Deactivate account' if member.active else 'Activate account', 'Control whether this user can sign in.')] %}
+              <form method="post"
+                    action="{{ url_for('admin.update_user', user_id=member.id, action=action) }}"
+                    data-confirm="{{ title }} for {{ member.username }}?">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                <p>{{ description }}</p>
+                <button class="btn btn-outline">
+                  {{ title }} <i aria-hidden="true" class="bi bi-arrow-right">
+                  </i>
+                </button>
+              </form>
+            {% endfor %}
+            {% if not member.is_admin %}
+              <form method="post"
+                    action="{{ url_for('admin.update_user', user_id=member.id, action='delete') }}"
+                    data-confirm="Permanently delete {{ member.username }} and all of their summaries? This cannot be undone.">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                <p>Remove this account and its entire summary history.</p>
+                <button class="btn btn-outline danger-text">
+                  <i aria-hidden="true" class="bi bi-trash3">
+                  </i> Delete account
+                </button>
+              </form>
+            {% endif %}
+          {% endif %}
+        </div>
+      </section>
+    </div>
+    <section class="panel">
+      <div class="panel-heading">
+        <h2>Recent summaries</h2>
+        <a class="text-link"
+           href="{{ url_for('admin.summaries', user_id=member.id) }}">All user summaries <i aria-hidden="true" class="bi bi-arrow-up-right">
+          </i>
+        </a>
+      </div>{% if recent %}{{ summary_table(recent, true) }}{% else %}{{ empty_state('A fresh account.', 'This user has not created a summary yet.') }}{% endif %}</section>{% endblock %}

@@ -1,0 +1,189 @@
+{% extends "base.html" %}
+{% block title %}Your summarization workspace{% endblock %}
+{% block content %}
+  <div class="container-wide workspace-page">
+    <div class="page-heading">
+      <div>
+        <span class="eyebrow">THE ESSENTIALS, BEAUTIFULLY CLEAR</span>
+        <h1>
+          Make a long story <span class="accent-serif">short.</span>
+        </h1>
+        <p>Bring your text. We'll help you find the big picture.</p>
+      </div>
+      <span class="workspace-status">
+        <span class="status-dot"></span> Ready when you are</span>
+      </div>
+      <div class="workspace-grid">
+        <form id="summarizer-form" novalidate
+              class="panel input-panel"
+              data-endpoint="{{ url_for('summarizer.generate') }}"
+              data-max="50000">
+          {{ form.csrf_token }}
+          <div class="panel-heading">
+            <h2>
+              <i aria-hidden="true" class="bi bi-text-paragraph">
+              </i> Original text
+            </h2>
+            <button type="button" class="text-button" id="sample-text">
+              <i aria-hidden="true" class="bi bi-magic">
+              </i> Try an example
+            </button>
+          </div>
+          <div class="editor-area">
+            <label for="text" class="visually-hidden">Text to summarize</label>{{ form.text(id='text', class='text-editor', placeholder='Paste your article, research notes, or that very long email here…\n\nGood ideas deserve a little breathing room.', maxlength=50000) }}
+          </div>
+          <div class="editor-meta">
+            <div>
+              <span id="word-count">0</span> words <span class="meta-divider">/</span> <span id="char-count">0</span> characters
+            </div>
+            <button type="button" id="clear-text" class="text-button">
+              <i aria-hidden="true" class="bi bi-trash3">
+              </i> Clear
+            </button>
+          </div>
+          <div class="settings-area">
+            <div class="settings-label">
+              <span class="field-label">Summary length</span>
+              <span>How much detail do you need?</span>
+            </div>
+            <div class="length-options" role="group" aria-label="Summary length">
+              {% for value, label in form.length.choices %}
+                <label class="length-option">
+                  <input type="radio"
+                         name="length"
+                         value="{{ value }}"
+                         {{ 'checked' if value == 'medium' }}>
+                  <span>
+                    <strong>{{ label }}</strong>
+                    <small>{{ {'short':'Just the highlights','medium':'A balanced overview','long':'A little more detail'}[value] }}</small>
+                  </span>
+                </label>
+              {% endfor %}
+            </div>
+            <div id="summary-error" class="inline-error" role="alert" hidden></div>
+            <button type="submit"
+                    id="generate-button"
+                    class="btn btn-primary generate-button">
+              <i aria-hidden="true" class="bi bi-stars">
+              </i>
+              <span>Generate summary</span>
+              <i aria-hidden="true" class="bi bi-arrow-right">
+              </i>
+            </button>
+            <div class="editor-hint">
+              <i aria-hidden="true" class="bi bi-info-circle">
+              </i> At least 30 words. Up to 50,000 characters.
+            </div>
+          </div>
+        </form>
+        <section class="panel result-panel"
+                 aria-live="polite"
+                 aria-busy="false"
+                 id="result-panel">
+          <div class="panel-heading">
+            <h2>
+              <i aria-hidden="true" class="bi bi-stars">
+              </i> Your summary
+            </h2>
+            <span class="result-badge">A little more clarity</span>
+          </div>
+          <div id="result-empty" class="result-empty">
+            <div class="summary-illustration">
+              <div class="illustration-paper">
+                <i aria-hidden="true" class="bi bi-stars">
+                </i>
+                <span></span>
+                <span></span>
+                <span></span>
+              </div>
+              <span class="illustration-spark">✦</span>
+            </div>
+            <h3>The big picture starts here.</h3>
+            <p>
+              Your summary will appear here.
+              <br>
+              Less to read. More to take away.
+            </p>
+            <div class="empty-tips">
+              <span>
+                <i aria-hidden="true" class="bi bi-check2">
+                </i> Key ideas, preserved</span>
+                <span>
+                  <i aria-hidden="true" class="bi bi-check2">
+                  </i> Easy to copy & share</span>
+                </div>
+              </div>
+              <div id="result-loading" class="result-empty" hidden>
+                <div class="loading-orbit">
+                  <i aria-hidden="true" class="bi bi-stars">
+                  </i>
+                </div>
+                <h3>Finding the important ideas…</h3>
+                <p>
+                  Long passages may take a little longer.
+                  <br>
+                  We'll bring the essentials together.
+                </p>
+              </div>
+              <div id="result-content" hidden>
+                <div class="result-stat-grid">
+                  <div>
+                    <span>Original words</span>
+                    <strong id="result-original">0</strong>
+                  </div>
+                  <div>
+                    <span>Summary words</span>
+                    <strong id="result-words">0</strong>
+                  </div>
+                  <div>
+                    <span>Text reduction</span>
+                    <strong class="teal-text" id="result-compression">0%</strong>
+                  </div>
+                  <div>
+                    <span>Processing time</span>
+                    <strong id="result-time">0s</strong>
+                  </div>
+                </div>
+                <div id="summary-output" class="prose-text summary-output"></div>
+                <div class="result-notice" id="result-notice"></div>
+                <a id="saved-link" class="saved-link" hidden>
+                  <i aria-hidden="true" class="bi bi-check2-circle">
+                  </i> Saved to your history <i aria-hidden="true" class="bi bi-arrow-up-right">
+                  </i>
+                </a>
+                <div class="panel-bottom">
+                  <span class="engine-note">
+                    <i aria-hidden="true" class="bi bi-cpu">
+                    </i> <span id="result-method"></span>
+                  </span>
+                  <div class="button-row">
+                    <button class="btn btn-small btn-outline" data-copy-target="summary-output">
+                      <i aria-hidden="true" class="bi bi-copy">
+                      </i> Copy
+                    </button>
+                    <button class="btn btn-small btn-primary" id="download-summary">
+                      <i aria-hidden="true" class="bi bi-download">
+                      </i> Download
+                    </button>
+                  </div>
+                </div>
+              </div>
+              <div class="result-footnote">
+                <i aria-hidden="true" class="bi bi-shield-check">
+                </i> {% if current_user.is_authenticated %}Only you and authorized admins can view your saved summaries.{% else %}Guest text isn't saved. <a href="{{ url_for('auth.register') }}">Create an account</a> to keep your history.{% endif %}</div>
+              </section>
+            </div>
+            <div class="workspace-help">
+              <span>
+                <i aria-hidden="true" class="bi bi-lightbulb">
+                </i> A small tip</span>
+                <p>Summaries work best with complete English paragraphs. Always review important details against the original.</p>
+                <a href="{{ url_for('main.about') }}">How it works <i aria-hidden="true" class="bi bi-arrow-up-right">
+                  </i>
+                </a>
+              </div>
+            </div>
+{% endblock %}
+{% block scripts %}
+  <script src="{{ url_for('static', filename='js/summarizer.js') }}" defer></script>
+{% endblock %}

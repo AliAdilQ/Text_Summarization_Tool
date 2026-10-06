@@ -1,0 +1,23 @@
+{% extends "user/base.html" %}
+{% from 'macros.html' import summary_content %}
+{% block title %}{{ summary.title }}{% endblock %}
+{% block workspace_content %}
+  <a class="back-link" href="{{ url_for('user.history') }}">
+    <i aria-hidden="true" class="bi bi-arrow-left">
+    </i> Back to your history</a>
+    <div class="page-heading detail-heading">
+      <div>
+        <span class="eyebrow">AN IDEA WORTH KEEPING</span>
+        <h1>{{ summary.title }}</h1>
+        <p>Created {{ summary.created_at.strftime("%B %d, %Y at %H:%M") }} UTC</p>
+      </div>
+      <form method="post"
+            action="{{ url_for('user.delete', summary_id=summary.id) }}"
+            data-confirm="Delete this summary permanently?">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        <button class="btn btn-outline danger-text">
+          <i aria-hidden="true" class="bi bi-trash3">
+          </i> Delete
+        </button>
+      </form>
+    </div>{{ summary_content(summary) }}{% endblock %}

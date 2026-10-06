@@ -1,0 +1,86 @@
+{% extends "base.html" %}
+{% block body_class %}admin-body{% endblock %}
+{% block navigation %}
+  <aside class="admin-sidebar">
+    <a class="brand" href="{{ url_for('main.home') }}">
+      <span class="brand-symbol">
+        <i aria-hidden="true" class="bi bi-text-paragraph">
+        </i>
+      </span>briefly<span class="brand-dot">.</span>
+    </a>
+    <span class="admin-label">ADMIN WORKSPACE</span>
+    <span class="sidebar-label">MANAGEMENT</span>
+    <nav aria-label="Admin navigation">
+      <a class="sidebar-link {{ 'active' if request.endpoint == 'admin.dashboard' }}"
+         href="{{ url_for('admin.dashboard') }}">
+        <i aria-hidden="true" class="bi bi-grid-1x2">
+        </i> Dashboard</a>
+        <a class="sidebar-link {{ 'active' if request.endpoint in ['admin.users','admin.user_detail'] }}"
+           href="{{ url_for('admin.users') }}">
+          <i aria-hidden="true" class="bi bi-people">
+          </i> Users</a>
+          <a class="sidebar-link {{ 'active' if request.endpoint in ['admin.summaries','admin.summary_detail'] }}"
+             href="{{ url_for('admin.summaries') }}">
+            <i aria-hidden="true" class="bi bi-file-earmark-text">
+            </i> Summaries</a>
+          </nav>
+          <div class="admin-sidebar-bottom">
+            <div class="sidebar-note">
+              <span class="status-dot"></span>
+              <h4>A clearer overview.</h4>
+              <p>Keep your community and its ideas in good hands.</p>
+            </div>
+            <a class="sidebar-link" href="{{ url_for('summarizer.workspace') }}">
+              <i aria-hidden="true" class="bi bi-arrow-up-right-square">
+              </i> Open summarizer</a>
+              <a class="sidebar-link" href="{{ url_for('user.dashboard') }}">
+                <i aria-hidden="true" class="bi bi-arrow-left">
+                </i> My workspace</a>
+              </div>
+            </aside>
+            <header class="admin-topbar">
+              <div>
+                <span>Workspace</span>
+                <i aria-hidden="true" class="bi bi-chevron-right">
+                </i>
+                <strong>{% block admin_breadcrumb %}Dashboard{% endblock %}</strong>
+              </div>
+              <div class="nav-actions">
+                <span class="admin-top-note">
+                  <span class="status-dot"></span> Administrator access</span>
+                  <button class="theme-toggle icon-button" aria-label="Toggle color theme">
+                    <i aria-hidden="true" class="bi bi-moon">
+                    </i>
+                  </button>
+                  <span class="topbar-divider"></span>
+                  <a class="avatar"
+                     href="{{ url_for('user.profile') }}">{{ current_user.username[0]|upper }}</a>
+                  <div class="admin-account">
+                    <strong>{{ current_user.username }}</strong>
+                    <small>Administrator</small>
+                  </div>
+                  <form method="post" action="{{ url_for('auth.logout') }}">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                    <button class="icon-button" aria-label="Sign out">
+                      <i aria-hidden="true" class="bi bi-box-arrow-right">
+                      </i>
+                    </button>
+                  </form>
+                </div>
+              </header>
+{% endblock %}
+{% block layout %}
+  <main class="admin-main" id="main-content">
+    {% block admin_content %}{% endblock %}
+    <footer class="admin-footer">
+      <span>Briefly · A little clarity goes a long way.</span>
+      <span>Analytics use UTC <span class="small-dot"></span> <a href="https://github.com/AliAdilQ/Text_Summarization_Tool"
+    target="_blank"
+    rel="noopener">View source <i aria-hidden="true" class="bi bi-arrow-up-right">
+        </i>
+        </a>
+      </span>
+    </footer>
+  </main>
+{% endblock %}
+{% block footer %}{% endblock %}

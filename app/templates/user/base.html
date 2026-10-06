@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% block body_class %}workspace-background{% endblock %}
+{% block layout %}
+  <main id="main-content" class="container-wide user-layout">
+    <aside class="user-sidebar">
+      <span class="sidebar-label">YOUR WORKSPACE</span>
+      <a class="sidebar-link {{ 'active' if request.endpoint == 'user.dashboard' }}"
+         href="{{ url_for('user.dashboard') }}">
+        <i aria-hidden="true" class="bi bi-grid-1x2">
+        </i> Overview</a>
+        <a class="sidebar-link" href="{{ url_for('summarizer.workspace') }}">
+          <i aria-hidden="true" class="bi bi-stars">
+          </i> New summary <i aria-hidden="true" class="bi bi-plus-lg ms-auto">
+          </i>
+        </a>
+        <a class="sidebar-link {{ 'active' if request.endpoint in ['user.history','user.summary_detail'] }}"
+           href="{{ url_for('user.history') }}">
+          <i aria-hidden="true" class="bi bi-clock-history">
+          </i> My history</a>
+          <a class="sidebar-link {{ 'active' if request.endpoint == 'user.profile' }}"
+             href="{{ url_for('user.profile') }}">
+            <i aria-hidden="true" class="bi bi-person">
+            </i> Profile</a>
+            <div class="sidebar-note">
+              <i aria-hidden="true" class="bi bi-lightbulb">
+              </i>
+              <h4>A little less, a little better.</h4>
+              <p>Your next good idea could be just a summary away.</p>
+            </div>
+          </aside>
+          <div class="user-main">
+            {% block workspace_content %}{% endblock %}
+          </div>
+        </main>
+{% endblock %}

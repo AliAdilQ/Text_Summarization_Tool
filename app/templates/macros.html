@@ -1,0 +1,148 @@
+{% macro field(input, placeholder='') %}
+  <div class="form-field">
+    {{ input.label(class='field-label') }}
+    {{ input(class='form-control' ~ (' is-invalid' if input.errors else ''), placeholder=placeholder) }}
+    {% for error in input.errors %}<div class="field-error">{{ error }}</div>{% endfor %}
+  </div>
+{% endmacro %}
+{% macro render_pagination(pages, endpoint, q='', length='', user_id='') %}
+  {% if pages.pages > 1 %}
+    <nav class="pagination-bar" aria-label="Pagination">
+      <span>Showing {{ pages.first }}–{{ pages.last }} of {{ pages.total }}</span>
+      <div class="page-links">
+        {% for page in pages.iter_pages(left_edge=1, right_edge=1, left_current=1, right_current=1) %}
+          {% if page %}<a class="page-link {{ 'active' if page == pages.page }}"
+   href="{{ url_for(endpoint, page=page, q=q, length=length, user_id=user_id) }}"
+   {{ 'aria-current=page' if page == pages.page }}>{{ page }}</a>{% else %}<span>…</span>{% endif %}
+        {% endfor %}
+      </div>
+    </nav>
+  {% endif %}
+{% endmacro %}
+{% macro empty_state(title, text, link='', button='Create a summary') %}
+  <div class="empty-state">
+    <div class="empty-icon">
+      <i aria-hidden="true" class="bi bi-inbox">
+      </i>
+    </div>
+    <h3>{{ title }}</h3>
+    <p>{{ text }}</p>{% if link %}<a class="btn btn-primary"
+   href="{{ link }}">{{ button }} <i aria-hidden="true" class="bi bi-arrow-right">
+      </i>
+    </a>
+{% endif %}
+</div>
+{% endmacro %}
+{% macro summary_table(items, admin=false) %}
+  <div class="table-responsive">
+    <table class="table app-table">
+      <thead>
+        <tr>
+          <th>Summary</th>{% if admin %}<th>Created by</th>{% endif %}<th>Length</th>
+          <th>Words</th>
+          <th>Reduction</th>
+          <th>Created</th>
+          <th>
+            <span class="visually-hidden">Open</span>
+          </th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for item in items %}
+          <tr>
+            <td>
+              <a class="table-title"
+                 href="{{ url_for('admin.summary_detail' if admin else 'user.summary_detail', summary_id=item.id) }}">{{ item.title }}</a>
+              <span class="table-subtext">{{ item.method|capitalize }} engine</span>
+            </td>
+            {% if admin %}
+              <td>
+                <a class="user-cell"
+                   href="{{ url_for('admin.user_detail', user_id=item.user_id) }}">
+                  <span class="mini-avatar">{{ item.user.username[0]|upper }}</span>{{ item.user.username }}</a>
+              </td>
+            {% endif %}
+            <td>
+              <span class="badge-length {{ item.summary_length }}">{{ item.summary_length|capitalize }}</span>
+            </td>
+            <td>
+              {{ item.original_word_count }} <i aria-hidden="true" class="bi bi-arrow-right muted">
+              </i> {{ item.summary_word_count }}
+            </td>
+            <td>
+              <span class="reduction">{{ '%.0f'|format(item.compression_ratio) }}%</span>
+            </td>
+            <td class="muted nowrap">{{ item.created_at.strftime("%b %d, %Y") }}</td>
+            <td>
+              <a class="icon-button"
+                 aria-label="Open {{ item.title }}"
+                 href="{{ url_for('admin.summary_detail' if admin else 'user.summary_detail', summary_id=item.id) }}">
+                <i aria-hidden="true" class="bi bi-arrow-up-right">
+                </i>
+              </a>
+            </td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+{% endmacro %}
+{% macro summary_content(summary, admin=false) %}
+  <div class="result-stat-grid detail-stats">
+    <div>
+      <span>Original words</span>
+      <strong>{{ summary.original_word_count }}</strong>
+    </div>
+    <div>
+      <span>Summary words</span>
+      <strong>{{ summary.summary_word_count }}</strong>
+    </div>
+    <div>
+      <span>Text reduction</span>
+      <strong class="teal-text">{{ summary.compression_ratio }}<small>%</small>
+      </strong>
+    </div>
+    <div>
+      <span>Processing time</span>
+      <strong>{{ '%.3f'|format(summary.processing_time) }}<small>s</small>
+      </strong>
+    </div>
+  </div>
+  <div class="detail-columns">
+    <section class="panel">
+      <div class="panel-heading">
+        <h2>
+          <i aria-hidden="true" class="bi bi-text-paragraph">
+          </i> Original text
+        </h2>
+        <span>{{ summary.original_word_count }} words</span>
+      </div>
+      <div class="prose-text original-prose">{{ summary.original_text }}</div>
+    </section>
+    <section class="panel result-panel">
+      <div class="panel-heading">
+        <h2>
+          <i aria-hidden="true" class="bi bi-stars">
+          </i> Your summary
+        </h2>
+        <span class="badge-length {{ summary.summary_length }}">{{ summary.summary_length|capitalize }}</span>
+      </div>
+      <div class="prose-text" id="saved-summary">{{ summary.summarized_text }}</div>
+      <div class="panel-bottom">
+        <span class="engine-note">
+          <i aria-hidden="true" class="bi bi-cpu">
+          </i> {{ summary.method|capitalize }} engine</span>
+          <div class="button-row">
+            <button class="btn btn-small btn-outline" data-copy-target="saved-summary">
+              <i aria-hidden="true" class="bi bi-copy">
+              </i> Copy
+            </button>
+            <a class="btn btn-small btn-primary"
+               href="{{ url_for('admin.download' if admin else 'user.download', summary_id=summary.id) }}">
+              <i aria-hidden="true" class="bi bi-download">
+              </i> Download</a>
+            </div>
+          </div>
+        </section>
+      </div>
+{% endmacro %}

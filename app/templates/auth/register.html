@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+{% from 'macros.html' import field %}
+{% block title %}Create your workspace{% endblock %}
+{% block content %}
+  <div class="auth-layout container-wide">
+    <section class="auth-story">
+      <span class="eyebrow">LESS READING. MORE POSSIBILITY.</span>
+      <h1>
+        Make room for
+        <br>
+        <span class="accent-serif">good ideas.</span>
+      </h1>
+      <p>
+        Build your personal library of insights.
+        <br>
+        All your summaries, in one quiet place.
+      </p>
+      <div class="auth-benefits">
+        <div>
+          <i aria-hidden="true" class="bi bi-check2-circle">
+          </i>
+          <span>Save every summary automatically</span>
+        </div>
+        <div>
+          <i aria-hidden="true" class="bi bi-check2-circle">
+          </i>
+          <span>Revisit the ideas that matter</span>
+        </div>
+        <div>
+          <i aria-hidden="true" class="bi bi-check2-circle">
+          </i>
+          <span>Copy, download, and keep moving</span>
+        </div>
+      </div>
+      <div class="auth-story-footer">
+        <i aria-hidden="true" class="bi bi-stars">
+        </i> A fresh perspective starts here.
+      </div>
+    </section>
+    <section class="auth-form-panel">
+      <div class="auth-form-heading">
+        <h2>Your next chapter</h2>
+        <p>Create your free account to get started.</p>
+      </div>
+      <form method="post" novalidate>
+        {{ form.hidden_tag() }}{{ field(form.username, 'Choose a username') }}{{ field(form.email, 'you@example.com') }}{{ field(form.password, 'At least 8 characters') }}{{ field(form.confirm_password, 'One more time') }}<button class="btn btn-primary auth-submit" type="submit">
+        Create account <i aria-hidden="true" class="bi bi-arrow-right">
+        </i>
+        </button>
+      </form>
+      <p class="auth-switch">
+        Already have an account? <a href="{{ url_for('auth.login') }}">Sign in</a>
+      </p>
+    </section>
+  </div>
+{% endblock %}
